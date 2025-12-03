@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensores TES - Infografía Animada</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .infografia {
+            background: white;
+            max-width: 1400px;
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header .subtitle {
+            font-size: 1.3em;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+        
+        .section {
+            padding: 40px;
+            border: 1px solid #ecf0f1;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+        }
+        
+        .section-basic {
+            background: #ebf5fb;
+            grid-column: 1 / -1;
+        }
+        
+        .section-basic .icon {
+            background: #3498db;
+            color: white;
+        }
+        
+        .section-details {
+            background: #fef5e7;
+        }
+        
+        .section-details .icon {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .section-apps {
+            background: #e8f8f5;
+        }
+        
+        .section-apps .icon {
+            background: #1abc9c;
+            color: white;
+        }
+        
+        .principle-box {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .temp-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.2em;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        
+        /* Animación del proceso */
+        .process-animation {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .process-step {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .process-step h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        
+        /* Canvas para animaciones */
+        .canvas-container {
+            width: 100%;
+            height: 200px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #dee2e6;
+        }
+        
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .animation-control {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn-animate {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn-animate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .btn-animate:active {
+            transform: translateY(0);
+        }
+        
+        /* Sección de imagen real */
+        .image-upload-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .image-upload-section h3 {
+            color: #e67e22;
+            margin-bottom: 15px;
+        }
+        
+        .upload-area {
+            border: 3px dashed #bdc3c7;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .upload-area:hover {
+            border-color: #3498db;
+            background: #ecf0f1;
+        }
+        
+        .upload-area.dragover {
+            border-color: #2ecc71;
+            background: #d5f4e6;
+        }
+        
+        #imagePreview {
+            max-width: 100%;
+            max-height: 400px;
+            margin-top: 20px;
+            border-radius: 10px;
+            display: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .image-caption {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .image-caption input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        
+        /* Responsive Design - Optimización para móviles */
+        @media (max-width: 1200px) {
+            .process-animation {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .section-basic {
+                grid-column: 1;
+            }
+            
+            .detail-grid, .app-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                -webkit-text-size-adjust: 100%;
+            }
+            
+            .infografia {
+                overflow-x: hidden;
+            }
+            
+            .header {
+                padding: 25px 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+                margin-bottom: 10px;
+            }
+            
+            .header .subtitle {
+                font-size: 1em;
+            }
+            
+            .section {
+                padding: 25px 15px;
+            }
+            
+            .section-title {
+                font-size: 1.4em;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2em;
+            }
+            
+            .process-animation {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .process-step {
+                padding: 15px;
+            }
+            
+            .process-step h4 {
+                font-size: 1em;
+            }
+            
+            .canvas-container {
+                height: 180px;
+            }
+            
+            .temp-display {
+                font-size: 1em;
+                padding: 12px;
+            }
+            
+            .btn-animate {
+                padding: 12px 30px;
+                font-size: 1em;
+                width: 100%;
+                -webkit-tap-highlight-color: transparent;
+                touch-action: manipulation;
+            }
+            
+            .principle-box {
+                padding: 20px 15px;
+            }
+            
+            .principle-box p {
+                font-size: 1em;
+            }
+            
+            .detail-card, .app-card {
+                padding: 15px;
+            }
+            
+            .app-icon {
+                font-size: 2.5em;
+            }
+            
+            .image-upload-section {
+                padding: 20px 15px;
+            }
+            
+            .upload-area {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
+            .header h1 {
+                font-size: 1.5em;
+            }
+            
+            .header .subtitle {
+                font-size: 0.9em;
+            }
+            
+            .section {
+                padding: 20px 10px;
+            }
+            
+            .section-title {
+                font-size: 1.2em;
+            }
+            
+            .canvas-container {
+                height: 150px;
+            }
+            
+            .process-step p {
+                font-size: 0.85em;
+            }
+            
+            .btn-animate {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+            
+            .app-grid {
+                gap: 10px;
+            }
+            
+            .principle-box {
+                padding: 15px 10px;
+            }
+        }
+        
+        /* Resto de estilos anteriores */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .detail-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .detail-card h4 {
+            color: #e67e22;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .app-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .app-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .app-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .app-card h4 {
+            color: #16a085;
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 1200px) {
+            .process-animation {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .section-basic {
+                grid-column: 1;
+            }
+            
+            .detail-grid, .app-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .process-animation {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* Puedes añadir esto al final del <style> */
+        .image-list-row {
+            display: flex;
+            align-items: center;
+            gap: 25px; /* Espacio entre imagen y lista */
+        }
+        .image-list-row ul {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="infografia">
+        <!-- Header -->
+        <div class="header">
+            <h1> 🔭 SENSORES TES  🌡❄️ </h1>
+            <div class="subtitle">Transition Edge Sensors: Detectores Superconductores de Ultra-Alta Sensibilidad</div>
+        </div>
+        
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Principio Básico -->
+            <section class="section section-basic">
+                <h2 class="section-title">
+                    <span class="icon">🔬</span>
+                    Principio Básico de Funcionamiento
+                </h2>
+                
+                <div class="principle-box">
+                    <p style="font-size: 1.1em; line-height: 1.6; margin-bottom: 20px;">
+                        Un sensor TES es un <strong>termómetro superconductor de precisión extrema</strong> que aprovecha 
+                        la transición abrupta de resistencia cuando un material superconductor pasa de su estado superconductor a su estado normal.
+                        Acoplado a un absorbente adecuado, puede detectar fotones individuales con energías que van desde el infrarrojo hasta los rayos X.
+                        Las variaciones de temperatura son mínimas (millonésimas de grado) por lo que se requiere operar a temperaturas muy bajas (con equipos criogénicos 
+                        como refrigeradores de dilución) y amplificar adecuadamente la señal (con dispositivos especiales llamados SQUIDs).
+                        <br>En el <strong>INMA</strong> (Instituto de Nanociencia y Materiales de Aragón) desarrollamos y fabricamos estos dispositivos desde hace más de una década para diferentes aplicaciones.
+                    </p>
+                    
+                    <div class="temp-display">
+                        ❄️ Opera a temperaturas criogénicas: 50-120 mK (0.05-0.12 K)
+                    </div>
+                    
+                    <!-- Animación del proceso -->
+                    <div class="animation-control">
+                        <button class="btn-animate" onclick="startAnimation()">▶ Iniciar Animación del Proceso</button>
+                    </div>
+                    
+                    <div class="process-animation">
+                        <div class="process-step">
+                            <h4>1. Absorción del Fotón</h4>
+                            <div class="canvas-container">
+                                <canvas id="canvas1"></canvas>
+                            </div>
+                            <p style="margin-top: 10px; font-size: 0.9em; color: #7f8c8d;">
+                                Un fotón de energía E impacta el sensor
+                            </p>
+                        </div>
+                        
+                        <div class="process-step">
+                            <h4>2. Aumento de Temperatura</h4>
+                            <div class="canvas-container">
+                                <canvas id="canvas2"></canvas>
+                            </div>
+                            <p style="margin-top: 10px; font-size: 0.9em; color: #7f8c8d;">
+                                T aumenta de T₀ a T₀ + ΔT
+                            </p>
+                        </div>
+                        
+                        <div class="process-step">
+                            <h4>3. Cambio de Resistencia R(T)</h4>
+                            <div class="canvas-container">
+                                <canvas id="canvas3"></canvas>
+                            </div>
+                            <p style="margin-top: 10px; font-size: 0.9em; color: #7f8c8d;">
+                                Transición superconductor → normal
+                            </p>
+                        </div>
+                        
+                        <div class="process-step">
+                            <h4>4. Pulso de Salida V<sub>out</sub>(t)</h4>
+                            <div class="canvas-container">
+                                <canvas id="canvas4"></canvas>
+                            </div>
+                            <p style="margin-top: 10px; font-size: 0.9em; color: #7f8c8d;">
+                                Señal medible proporcional a E
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #fff3cd; padding: 20px; border-radius: 10px; border-left: 4px solid #ffc107;">
+                        <strong>🔑 Retroalimentación Electrotérmica Negativa:</strong>
+                        <p style="margin-top: 10px; line-height: 1.6;">
+                            El TES se alimenta a voltaje constante. Así, cuando R aumenta → I disminuye → Potencia Joule (I²R) disminuye → El sensor se enfría → 
+                            Vuelve a T₀.<br> Este mecanismo estabiliza el sensor y determina el tiempo de recuperación (τ).
+                        </p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Diseño y Fabricación -->
+            <section class="section section-details">
+                <h2 class="section-title">
+                    <span class="icon">🔧</span>
+                    Diseño y Fabricación
+                </h2>
+                
+                <div class="detail-grid">
+                    <div class="detail-card">
+                        <h4>🧪 Materiales TES</h4>
+                        <p style="margin-top: 10px; font-size: 0.9em; color: #7f8c8d;">
+                            Se usan bicapas delgadas (efecto de proximidad) para ajustar T<sub>c</sub> al valor deseado.
+                        </p>
+                        <p><strong>Bicapas comunes:</strong></p>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>Mo/Au (Molibdeno/Oro)</li>
+                            <li>Mo/Cu (Molibdeno/Cobre)</li>
+                            <li>W (Tungsteno)</li>
+                            <li>Al/Ag (Aluminio/Plata)</li>
+                            <li>Espesor: 20-100 nm</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="detail-card">
+                        <h4>🜚 Absorbentes</h4>
+                        <p style="margin-top: 10px; font-size: 0.9em; color: #7f8c8d;">
+                            Se usan materiales con alta eficiencia de absorción en la banda de interés y buena conductividad térmica.
+                        </p>
+                        <p><strong>Datos típicos:</strong></p>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>Oro (Au) y Bismuto (Bi)</li>
+                            <li>Tamaño: 100-500 µm</li>
+                            <li>Espesor: 2-6 µm</li>
+                            <li>Arrays de hasta 1000+ píxeles</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="detail-card">
+                        <h4>🎛️ Sensibilidad</h4>
+                        <p><strong>Parámetro α = d(log R)/d(log T)</strong></p>
+                        <p style="margin-top: 10px;">Mide la sensibilidad de la transición</p>
+                        <p style="margin-top: 5px;">Valores típicos: <strong>100-500</strong></p>
+                        <p style="margin-top: 10px; color: #e67e22;"><em>Mayor α = Mayor sensibilidad</em></p>
+                    </div>
+                    
+                    <div class="detail-card">
+                        <h4>🦑 Lectura (Readout)</h4>
+                        <p><strong>SQUID</strong> (Superconducting Quantum Interference Device)</p>
+                        <p style="margin-top: 10px;">Amplifica las pequeñas corrientes del TES para producir una señal medible</p>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; padding: 20px; background: white; border-radius: 10px;">
+                    <h4 style="color: #e67e22; margin-bottom: 10px;">🏭 Proceso de Fabricación</h4>
+                    <p style="line-height: 1.6;">
+                        <strong>1.</strong> Deposición de películas delgadas por 'sputtering'.<br>
+                        <strong>2.</strong> Litografía para definir geometría.<br>
+                        <strong>3.</strong> Deposición de absorbente por electrodeposición.<br>
+                        <strong>4.</strong> Procesamiento completo de obleas con diferentes diseños.
+                    </p>
+                </div>
+                <!-- Sección para cargar imagen real -->
+                <div class="image-upload-section">
+                    <h3>📸 Imagenes reales de sensores TES en el <strong>INMA</strong></h3>
+                    <!--
+                    <p style="margin-bottom: 15px; color: #7f8c8d;">
+                        Arrastra o haz clic para cargar tu propia imagen de un sensor TES (formato JPG, PNG)
+                    </p>
+                    -->
+                    <div class="image-list-row">
+                    <img src="Imagen1.jpg" alt="Un ejemplo de mi imagen" width="300" height="300">
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>Array de sensores.</li>
+                        <li>Imagen SEM de un pixel.</li>
+                        <li>Interior de un refrigerador de dilucion.</li>
+                        <li>Espectro real de rayos-X.</li>
+                        <br>
+                        <br>
+                        <img src="logo-inma2.png" alt="Un ejemplo de mi imagen" width="180" height="54">
+                    </ul>
+                    </div>
+                    <!--
+                    <div class="upload-area" id="uploadArea">
+                        <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                        <div id="uploadText">
+                            <p style="font-size: 3em; margin-bottom: 10px;">📁</p>
+                            <p style="font-size: 1.1em;"><strong>Arrastra tu imagen aquí</strong></p>
+                            <p style="color: #7f8c8d; margin-top: 5px;">o haz clic para seleccionar</p>
+                        </div>
+                        <img id="imagePreview" alt="Sensor TES">
+                    </div>
+                    -->
+                    <div class="image-caption" id="imageCaption">
+                        <input type="text" id="captionInput" placeholder="Añade una descripción de tu imagen (opcional)">
+                    </div>
+                </div>
+                
+            </section>
+            
+            <!-- Aplicaciones -->
+            <section class="section section-apps">
+                <h2 class="section-title">
+                    <span class="icon">🚀</span>
+                    Aplicaciones Científicas
+                </h2>
+                
+                <div class="app-grid">
+                    <div class="app-card">
+                        <div class="app-icon">🌌</div>
+                        <h4>Astrofísica de Rayos X</h4>
+                        <p>Espectroscopía de alta resolución de objetos cósmicos: agujeros negros, remanentes de supernova</p>
+                    </div>
+                    
+                    <div class="app-card">
+                        <div class="app-icon">🌠</div>
+                        <h4>Fondo Cósmico de Microondas</h4>
+                        <p>Detección de polarización del CMB para estudiar el universo primordial y la inflación</p>
+                    </div>
+                    
+                    <div class="app-card">
+                        <div class="app-icon">🔮</div>
+                        <h4>Búsqueda de Materia Oscura</h4>
+                        <p>Detección directa de WIMPs y axiones</p>
+                    </div>
+                    
+                    <div class="app-card">
+                        <div class="app-icon">💫</div>
+                        <h4>Tecnologías Cuánticas</h4>
+                        <p>Detección de fotones individuales con resolución de número en circuitos fotónicos</p>
+                    </div>
+                    
+                    <div class="app-card">
+                        <div class="app-icon">🧬</div>
+                        <h4>Bio-imagen</h4>
+                        <p>Microscopía de rayos X blandos y espectrometría de masa para análisis biológico</p>
+                    </div>
+                    
+                    <div class="app-card">
+                        <div class="app-icon">⚛️</div>
+                        <h4>Física Nuclear</h4>
+                        <p>Espectrometría de partículas con resolución energética ~1-2 eV</p>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 25px; padding: 20px; background: white; border-radius: 10px;">
+                    <h4 style="color: #16a085; margin-bottom: 10px;">🛰️ Misiones y Experimentos Destacados</h4>
+                    <p style="line-height: 1.8;">
+                        <strong>•</strong> Athena X-IFU (ESA) - Observatorio espacial de rayos X<br>
+                        <strong>•</strong> LiteBIRD (JAXA) - Polarización del CMB desde el espacio<br>
+                        <strong>•</strong> Simons Observatory - Telescopio terrestre para CMB<br>
+                        <strong>•</strong> SCUBA-2 - Cámara submilimétrica en J.C.Maxwell Telescope (JCMT)<br>
+                        <strong>•</strong> SuperCDMS - Búsqueda criogénica de materia oscura
+                    </p>
+                </div>
+                    <div style="margin-top: 25px; padding: 20px; background: white; border-radius: 10px;">
+                    <h4 style="color: #16a085; margin-bottom: 10px;">🛈 Creación</h4>
+                    <p style="line-height: 1.8;">
+                        Creado con Claude.ai Sonnet 4.5 por Carlos Pobes (grupo QMAD@INMA) <img src="logo-qmad.jpg" alt="qmad" width="150" height="50">
+                    </p>
+                </div>
+                <a href="https://cpobes.github.io/Public/infografia_tes_animada.html">TES infography</a> © 2025 by <a href="http://www.eldiamaslargodemivida.com/">Carlos Pobes</a> is licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a><img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/nc.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/nd.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;">
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de canvas
+        const canvas1 = document.getElementById('canvas1');
+        const canvas2 = document.getElementById('canvas2');
+        const canvas3 = document.getElementById('canvas3');
+        const canvas4 = document.getElementById('canvas4');
+        
+        const ctx1 = canvas1.getContext('2d');
+        const ctx2 = canvas2.getContext('2d');
+        const ctx3 = canvas3.getContext('2d');
+        const ctx4 = canvas4.getContext('2d');
+        
+        // Ajustar tamaño de canvas
+        function resizeCanvas(canvas) {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+        }
+        
+        [canvas1, canvas2, canvas3, canvas4].forEach(resizeCanvas);
+        
+        let animationInProgress = false;
+        let animationFrame = 0;
+        const TOTAL_ANIMATION_FRAMES = 180;
+        
+        // Animación 1: Absorción del fotón con oscilación vertical
+        function animatePhotonAbsorption(ctx, canvas, frame) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const photonPhase = Math.min(1, frame / 40); // Fotón llega en frame 40
+            
+            // Baño térmico
+            ctx.fillStyle = '#1e8bc3';
+            ctx.fillRect(canvas.width * 0.35, canvas.height * 0.88, canvas.width * 0.3, canvas.height * 0.08);
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 11px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Baño: 50 mK', canvas.width * 0.5, canvas.height * 0.94);
+            
+            // Enlaces térmicos (vigas de soporte)
+            ctx.strokeStyle = '#95a5a6';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(canvas.width * 0.42, canvas.height * 0.75);
+            ctx.lineTo(canvas.width * 0.42, canvas.height * 0.88);
+            ctx.moveTo(canvas.width * 0.58, canvas.height * 0.75);
+            ctx.lineTo(canvas.width * 0.58, canvas.height * 0.88);
+            ctx.stroke();
+            
+            // Etiqueta G (conductancia térmica)
+            ctx.fillStyle = '#7f8c8d';
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('G', canvas.width * 0.38, canvas.height * 0.82);
+            
+            // Dibujar sensor TES
+            const sensorColor = frame > 40 && frame < 140 ? '#e74c3c' : '#3498db';
+            ctx.fillStyle = sensorColor;
+            ctx.fillRect(canvas.width * 0.4, canvas.height * 0.55, canvas.width * 0.2, canvas.height * 0.2);
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(canvas.width * 0.4, canvas.height * 0.55, canvas.width * 0.2, canvas.height * 0.2);
+            
+            // Texto "TES"
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('TES', canvas.width * 0.5, canvas.height * 0.67);
+            
+            // Fotón moviéndose hacia abajo con oscilación vertical
+            if (photonPhase < 1) {
+                const photonY = photonPhase * canvas.height * 0.55;
+                const photonX = canvas.width * 0.5;
+                
+                // Dibujar fotón como onda vertical
+                ctx.strokeStyle = '#e74c3c';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                for (let i = -20; i <= 20; i++) {
+                    const y = photonY + i;
+                    const x = photonX + Math.sin(i * 0.3 + frame * 0.3) * 8;
+                    if (i === -20) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+                
+                // Etiqueta del fotón
+                ctx.fillStyle = '#e74c3c';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText('γ (E)', photonX + 25, photonY);
+            }
+            
+            // Efecto de impacto
+            if (frame >= 38 && frame <= 48) {
+                ctx.fillStyle = `rgba(231, 76, 60, ${1 - (frame - 38) / 10})`;
+                ctx.beginPath();
+                ctx.arc(canvas.width * 0.5, canvas.height * 0.55, (frame - 38) * 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Mostrar flujo de calor hacia el baño (recuperación)
+            if (frame > 50 && frame < 150) {
+                const alpha = Math.min(0.7, (frame - 50) / 50);
+                for (let i = 0; i < 3; i++) {
+                    const offset = ((frame + i * 15) % 30) / 30;
+                    ctx.fillStyle = `rgba(255, 150, 0, ${alpha * (1 - offset)})`;
+                    ctx.beginPath();
+                    ctx.arc(canvas.width * 0.42, canvas.height * 0.75 + offset * (canvas.height * 0.13), 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(canvas.width * 0.58, canvas.height * 0.75 + offset * (canvas.height * 0.13), 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+        
+        // Animación 2: Aumento y recuperación de temperatura
+        function animateTemperature(ctx, canvas, frame) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Calcular temperatura según la fase
+            let tempRatio;
+            if (frame < 40) {
+                tempRatio = 0; // Antes del impacto
+            } else if (frame < 60) {
+                tempRatio = (frame - 40) / 20; // Subida rápida
+            } else if (frame < 150) {
+                // Bajada exponencial
+                tempRatio = Math.exp(-0.04 * (frame - 60));
+            } else {
+                tempRatio = 0;
+            }
+            
+            const T0 = 100; // mK
+            const deltaT = 5 * tempRatio;
+            
+            // Termómetro
+            const thermX = canvas.width * 0.3;
+            const thermY = canvas.height * 0.15;
+            const thermHeight = canvas.height * 0.55;
+            
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(thermX, thermY, 30, thermHeight);
+            
+            // Mercurio
+            const mercuryHeight = thermHeight * (0.3 + tempRatio * 0.5);
+            const gradient = ctx.createLinearGradient(0, thermY + thermHeight, 0, thermY + thermHeight - mercuryHeight);
+            gradient.addColorStop(0, '#3498db');
+            gradient.addColorStop(1, tempRatio > 0.3 ? '#e74c3c' : '#3498db');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(thermX + 3, thermY + thermHeight - mercuryHeight, 24, mercuryHeight);
+            
+            // Bulbo
+            ctx.beginPath();
+            ctx.arc(thermX + 15, thermY + thermHeight + 15, 20, 0, Math.PI * 2);
+            ctx.fillStyle = tempRatio > 0.3 ? '#e74c3c' : '#3498db';
+            ctx.fill();
+            ctx.stroke();
+            
+            // Valores de temperatura
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 15px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText(`T₀ = ${T0.toFixed(1)} mK`, canvas.width * 0.52, canvas.height * 0.25);
+            ctx.fillStyle = tempRatio > 0.1 ? '#e74c3c' : '#2c3e50';
+            ctx.fillText(`T = ${(T0 + deltaT).toFixed(1)} mK`, canvas.width * 0.52, canvas.height * 0.45);
+            ctx.fillStyle = '#e67e22';
+            ctx.fillText(`ΔT = ${deltaT.toFixed(2)} mK`, canvas.width * 0.52, canvas.height * 0.65);
+            
+            // Flecha de recuperación
+            if (frame > 70 && tempRatio > 0.05) {
+                ctx.strokeStyle = '#27ae60';
+                ctx.fillStyle = '#27ae60';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(canvas.width * 0.52, canvas.height * 0.75);
+                ctx.lineTo(canvas.width * 0.52, canvas.height * 0.85);
+                ctx.lineTo(canvas.width * 0.49, canvas.height * 0.82);
+                ctx.moveTo(canvas.width * 0.52, canvas.height * 0.85);
+                ctx.lineTo(canvas.width * 0.55, canvas.height * 0.82);
+                ctx.stroke();
+                ctx.font = 'bold 12px Arial';
+                ctx.fillText('Enfriamiento', canvas.width * 0.56, canvas.height * 0.82);
+            }
+        }
+        
+        // Animación 3: Curva R(T) con punto móvil
+        function animateResistanceCurve(ctx, canvas, frame) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const margin = 40;
+            const plotWidth = canvas.width - 2 * margin;
+            const plotHeight = canvas.height - 2 * margin;
+            
+            // Ejes
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(margin, margin);
+            ctx.lineTo(margin, canvas.height - margin);
+            ctx.lineTo(canvas.width - margin, canvas.height - margin);
+            ctx.stroke();
+            
+            // Etiquetas
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('T', canvas.width - margin/2, canvas.height - margin + 5);
+            ctx.save();
+            ctx.translate(margin - 25, canvas.height/2);
+            ctx.rotate(-Math.PI/2);
+            ctx.fillText('R', 0, 0);
+            ctx.restore();
+            
+            // Región de transición
+            ctx.fillStyle = 'rgba(52, 152, 219, 0.1)';
+            ctx.fillRect(margin + plotWidth * 0.3, margin, plotWidth * 0.4, plotHeight);
+            
+            ctx.fillStyle = '#3498db';
+            ctx.font = '11px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Región de transición', canvas.width/2, margin + 15);
+            
+            // Curva de transición completa
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            for (let i = 0; i <= plotWidth; i++) {
+                const t = i / plotWidth;
+                const r = 1 / (1 + Math.exp(-15 * (t - 0.5)));
+                const x = margin + i;
+                const y = canvas.height - margin - r * plotHeight;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Punto móvil en la curva
+            if (frame > 30) {
+                let t_current;
+                if (frame < 60) {
+                    // Subida
+                    t_current = 0.4 + ((frame - 30) / 30) * 0.3;
+                } else if (frame < 150) {
+                    // Bajada exponencial
+                    const progress = (frame - 60) / 90;
+                    t_current = 0.7 - 0.3 * (1 - Math.exp(-3 * progress));
+                } else {
+                    t_current = 0.4;
+                }
+                
+                const r = 1 / (1 + Math.exp(-15 * (t_current - 0.5)));
+                const x = margin + t_current * plotWidth;
+                const y = canvas.height - margin - r * plotHeight;
+                
+                // Punto rojo
+                ctx.fillStyle = '#e74c3c';
+                ctx.beginPath();
+                ctx.arc(x, y, 6, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Líneas punteadas
+                ctx.strokeStyle = '#e74c3c';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x, canvas.height - margin);
+                ctx.moveTo(x, y);
+                ctx.lineTo(margin, y);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // Etiquetas
+                ctx.fillStyle = '#e74c3c';
+                ctx.font = 'bold 11px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('T(t)', x, canvas.height - margin + 15);
+            }
+        }
+        
+        // Animación 4: Pulso de salida con subida muy rápida
+        function animateOutputPulse(ctx, canvas, frame) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const margin = 40;
+            const plotWidth = canvas.width - 2 * margin;
+            const plotHeight = canvas.height - 2 * margin;
+            
+            // Ejes
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(margin, margin);
+            ctx.lineTo(margin, canvas.height - margin);
+            ctx.lineTo(canvas.width - margin, canvas.height - margin);
+            ctx.stroke();
+            
+            // Etiquetas
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('t', canvas.width - margin/2, canvas.height - margin + 5);
+            ctx.save();
+            ctx.translate(margin - 25, canvas.height/2);
+            ctx.rotate(-Math.PI/2);
+            ctx.fillText('Vout', 0, 0);
+            ctx.restore();
+            
+            // Línea base
+            const baseline = canvas.height - margin - plotHeight * 0.1;
+            ctx.strokeStyle = '#95a5a6';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath();
+            ctx.moveTo(margin, baseline);
+            ctx.lineTo(canvas.width - margin, baseline);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Dibujar el pulso
+            if (frame > 35) {
+                ctx.strokeStyle = '#2ecc71';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                
+                const pulseStart = 35;
+                const pulseFrames = frame - pulseStart;
+                const maxPulseFrames = TOTAL_ANIMATION_FRAMES - pulseStart;
+                
+                for (let i = 0; i <= Math.min(plotWidth, plotWidth * pulseFrames / 100); i++) {
+                    const t = i / plotWidth;
+                    const effectiveFrame = (t * 100);
+                    let amplitude;
+                    
+                    if (effectiveFrame < 5) {
+                        // Subida MUY rápida
+                        amplitude = effectiveFrame / 5;
+                    } else {
+                        // Caída exponencial lenta
+                        amplitude = Math.exp(-0.03 * (effectiveFrame - 5));
+                    }
+                    
+                    const x = margin + i;
+                    const y = baseline - amplitude * plotHeight * 0.7;
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+                
+                // Anotaciones
+                if (pulseFrames > 20) {
+                    ctx.fillStyle = '#2ecc71';
+                    ctx.font = '11px Arial';
+                    ctx.textAlign = 'left';
+                    
+                    // Amplitud
+                    const peakX = margin + plotWidth * 0.05;
+                    const peakY = baseline - plotHeight * 0.7;
+                    ctx.strokeStyle = '#2ecc71';
+                    ctx.lineWidth = 1;
+                    ctx.setLineDash([3, 3]);
+                    ctx.beginPath();
+                    ctx.moveTo(peakX, peakY);
+                    ctx.lineTo(peakX + 25, peakY - 15);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    
+                    ctx.fillText('Amp. ∝ E', peakX + 28, peakY - 17);
+                    
+                    // Expresión de tau
+                    ctx.fillStyle = '#e67e22';
+                    ctx.font = 'bold 12px Arial';
+                    ctx.fillText('τ ∝ C/G', peakX + 28, peakY - 2);
+                }
+            }
+        }
+        
+        // Función principal de animación sincronizada
+        function startAnimation() {
+            if (animationInProgress) return;
+            animationInProgress = true;
+            animationFrame = 0;
+            
+            function animate() {
+                // Ejecutar todas las animaciones simultáneamente
+                animatePhotonAbsorption(ctx1, canvas1, animationFrame);
+                animateTemperature(ctx2, canvas2, animationFrame);
+                animateResistanceCurve(ctx3, canvas3, animationFrame);
+                animateOutputPulse(ctx4, canvas4, animationFrame);
+                
+                animationFrame++;
+                
+                if (animationFrame <= TOTAL_ANIMATION_FRAMES) {
+                    requestAnimationFrame(animate);
+                } else {
+                    animationInProgress = false;
+                }
+            }
+            
+            animate();
+        }
+        
+        // Manejo de carga de imagen
+        const uploadArea = document.getElementById('uploadArea');
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const imageCaption = document.getElementById('imageCaption');
+        const uploadText = document.getElementById('uploadText');
+        
+        uploadArea.addEventListener('click', () => imageInput.click());
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                loadImage(file);
+            }
+        });
+        
+        imageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                loadImage(file);
+            }
+        });
+        
+        function loadImage(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                uploadText.style.display = 'none';
+                imageCaption.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Inicializar con estado estático
+        window.addEventListener('load', () => {
+            // Dibujar estados iniciales estáticos
+            [canvas1, canvas2, canvas3, canvas4].forEach(resizeCanvas);
+            
+            // Canvas 1: Sensor y fotón inicial
+            ctx1.fillStyle = '#3498db';
+            ctx1.fillRect(canvas1.width * 0.4, canvas1.height * 0.6, canvas1.width * 0.2, canvas1.height * 0.3);
+            ctx1.strokeStyle = '#2c3e50';
+            ctx1.lineWidth = 2;
+            ctx1.strokeRect(canvas1.width * 0.4, canvas1.height * 0.6, canvas1.width * 0.2, canvas1.height * 0.3);
+            ctx1.fillStyle = 'white';
+            ctx1.font = 'bold 16px Arial';
+            ctx1.textAlign = 'center';
+            ctx1.fillText('TES', canvas1.width * 0.5, canvas1.height * 0.8);
+            
+            // Fotón en la parte superior
+            ctx1.strokeStyle = '#e74c3c';
+            ctx1.lineWidth = 3;
+            ctx1.beginPath();
+            for (let i = -20; i <= 20; i++) {
+                const x = canvas1.width * 0.5 + i;
+                const y = 20 + Math.sin(i * 0.3) * 8;
+                if (i === -20) {
+                    ctx1.moveTo(x, y);
+                } else {
+                    ctx1.lineTo(x, y);
+                }
+            }
+            ctx1.stroke();
+            ctx1.fillStyle = '#e74c3c';
+            ctx1.font = 'bold 14px Arial';
+            ctx1.fillText('γ (E)', canvas1.width * 0.5 + 30, 20);
+        });
+        
+        // Responsive
+        window.addEventListener('resize', () => {
+            [canvas1, canvas2, canvas3, canvas4].forEach(resizeCanvas);
+            if (!animationInProgress) {
+                window.dispatchEvent(new Event('load'));
+            }
+        });
+    </script>
+</body>
+</html>
