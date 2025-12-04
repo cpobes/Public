@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio de Infografías Científicas</title>
+    <meta name="description" content="Colección de infografías interactivas sobre temas científicos y tecnológicos">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #2c3e50;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            color: white;
+            padding: 60px 20px;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeInDown 0.8s ease;
+        }
+        
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+            font-weight: 300;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+        
+        /* Grid de proyectos */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        /* Tarjeta de proyecto */
+        .project-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 0.8s ease;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        
+        .project-thumbnail {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .project-thumbnail::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        .project-content {
+            padding: 25px;
+        }
+        
+        .project-title {
+            font-size: 1.5em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .project-description {
+            color: #7f8c8d;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .tag {
+            background: #ecf0f1;
+            color: #34495e;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        
+        .project-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .project-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .project-link:active {
+            transform: translateY(0);
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 40px 20px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .footer p {
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .footer a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: opacity 0.3s ease;
+        }
+        
+        .footer a:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+        
+        /* Sección de stats */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            background: rgba(255,255,255,0.95);
+            padding: 20px 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        /* Botón "Añadir nuevo proyecto" */
+        .add-project-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2em;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .add-project-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.7);
+        }
+        
+        /* Animaciones */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+            50% {
+                transform: translate(-10%, -10%);
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .header p {
+                font-size: 1.1em;
+            }
+            
+            .projects-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .stats {
+                gap: 20px;
+            }
+            
+            .stat-item {
+                padding: 15px 30px;
+            }
+            
+            .stat-number {
+                font-size: 2em;
+            }
+            
+            .add-project-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 1.5em;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 40px 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.5em;
+            }
+            
+            .project-content {
+                padding: 20px;
+            }
+            
+            .project-title {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🔬 Portfolio de Infografías Científicas</h1>
+            <p>Visualizaciones interactivas de conceptos científicos y tecnológicos</p>
+        </header>
+        
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-number" id="projectCount">1</span>
+                <div class="stat-label">Proyectos</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">🌐</span>
+                <div class="stat-label">Interactivo</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">📱</span>
+                <div class="stat-label">Responsive</div>
+            </div>
+        </div>
+        
+        <!-- Grid de proyectos -->
+        <div class="projects-grid">
+            
+            <!-- Proyecto 1: Sensores TES -->
+            <div class="project-card">
+                <div class="project-thumbnail">
+                    ⚡
+                </div>
+                <div class="project-content">
+                    <h2 class="project-title">Sensores TES</h2>
+                    <p class="project-description">
+                        Infografía interactiva sobre sensores de transición superconductora (TES). 
+                        Incluye animaciones del proceso físico de detección, curvas R(T) y pulsos de salida.
+                    </p>
+                    <div class="project-tags">
+                        <span class="tag">Física</span>
+                        <span class="tag">Superconductividad</span>
+                        <span class="tag">Detectores</span>
+                        <span class="tag">Animado</span>
+                    </div>
+                    <a href="infografia_tes_animada_responsive.html" class="project-link">Ver Infografía →</a>
+                </div>
+            </div>
+            
+            <!-- Proyecto 2: Plantilla para nuevo proyecto -->
+            <!-- Descomenta y modifica esta sección para añadir más proyectos
+            <div class="project-card">
+                <div class="project-thumbnail">
+                    🔭
+                </div>
+                <div class="project-content">
+                    <h2 class="project-title">Título del Proyecto</h2>
+                    <p class="project-description">
+                        Descripción breve del proyecto. Explica de qué trata y qué visualizaciones incluye.
+                    </p>
+                    <div class="project-tags">
+                        <span class="tag">Etiqueta 1</span>
+                        <span class="tag">Etiqueta 2</span>
+                        <span class="tag">Etiqueta 3</span>
+                    </div>
+                    <a href="nombre-archivo.html" class="project-link">Ver Proyecto →</a>
+                </div>
+            </div>
+            -->
+            
+        </div>
+        
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Creado con ❤️ para la divulgación científica</p>
+            <p>© 2024 - Actualizado regularmente con nuevos contenidos</p>
+            <!-- Opcional: añade tus enlaces
+            <p>
+                <a href="https://github.com/tu-usuario" target="_blank">GitHub</a> | 
+                <a href="https://twitter.com/tu-usuario" target="_blank">Twitter</a> | 
+                <a href="mailto:tu-email@ejemplo.com">Contacto</a>
+            </p>
+            -->
+        </footer>
+    </div>
+    
+    <!-- Botón flotante (opcional - puedes eliminarlo si no lo necesitas) -->
+    <!-- <a href="#" class="add-project-btn" title="Añadir nuevo proyecto">+</a> -->
+    
+    <script>
+        // Contador automático de proyectos
+        document.addEventListener('DOMContentLoaded', function() {
+            const projectCards = document.querySelectorAll('.project-card');
+            const projectCount = document.getElementById('projectCount');
+            if (projectCount) {
+                projectCount.textContent = projectCards.length;
+            }
+            
+            // Animación de entrada escalonada para las tarjetas
+            projectCards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html>
