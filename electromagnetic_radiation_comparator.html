@@ -1,0 +1,345 @@
+
+<style>
+h2.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+*{box-sizing:border-box}
+.wrap{padding:1rem 0;font-size:14px}
+.spectrum-bar{width:100%;height:28px;border-radius:var(--border-radius-md);margin-bottom:1.5rem;position:relative;background:linear-gradient(to right,#6a0dad 0%,#4b0082 4%,#0000ff 8%,#00bfff 12%,#00ff00 20%,#ffff00 28%,#ff8000 36%,#ff0000 44%,#8b0000 52%,#4a0000 60%,#2a0000 70%,#1a0000 80%,#0d0000 90%,#050000 100%)}
+.spectrum-marker{position:absolute;top:-8px;transform:translateX(-50%);width:2px;background:var(--color-text-primary);height:44px;border-radius:1px;opacity:0.85}
+.region-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--color-text-tertiary);margin-bottom:1.5rem;margin-top:0.25rem}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem}
+.control-card{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:12px 16px}
+.control-card label{display:block;font-size:12px;color:var(--color-text-secondary);margin-bottom:6px;font-weight:500}
+.control-card .val{font-size:20px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px}
+.control-card .unit{font-size:12px;color:var(--color-text-tertiary);margin-left:4px}
+input[type=range]{width:100%}
+.results{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:0.75rem}
+.results-row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr);gap:10px;margin-bottom:1rem}
+.metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;text-align:center}
+.metric .mlabel{font-size:11px;color:var(--color-text-secondary);margin-bottom:4px}
+.metric .mval{font-size:16px;font-weight:500;color:var(--color-text-primary)}
+.metric .munit{font-size:11px;color:var(--color-text-tertiary);display:block;margin-top:2px}
+.metric-wn{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 14px;display:flex;align-items:center;gap:12px}
+.metric-wn .mlabel{font-size:11px;color:var(--color-text-secondary);white-space:nowrap}
+.metric-wn .mval{font-size:16px;font-weight:500;color:var(--color-text-primary)}
+.metric-wn .munit{font-size:11px;color:var(--color-text-tertiary);margin-left:4px}
+.wn-context{font-size:11px;color:var(--color-text-tertiary);flex:1}
+.region-tags{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:1rem}
+.region-tag{display:inline-block;padding:3px 10px;border-radius:var(--border-radius-md);font-size:12px;font-weight:500}
+.region-sub{display:inline-block;padding:3px 10px;border-radius:var(--border-radius-md);font-size:12px;font-weight:500}
+.region-arrow{color:var(--color-text-tertiary);font-size:14px}
+.compare-section{margin-top:1rem}
+.compare-title{font-size:13px;color:var(--color-text-secondary);margin-bottom:8px;font-weight:500}
+.compare-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;font-size:13px}
+.compare-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.compare-name{color:var(--color-text-secondary);min-width:90px}
+.compare-vals{color:var(--color-text-primary);flex:1;font-size:12px}
+.add-btn{font-size:13px;padding:5px 14px;cursor:pointer;margin-top:6px}
+.clear-btn{font-size:13px;padding:5px 14px;cursor:pointer;margin-top:6px;margin-left:8px}
+.color-swatch{width:100%;height:20px;border-radius:4px;margin-top:8px}
+.sep{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:1.25rem 0}
+.tag{display:inline-block;padding:1px 7px;border-radius:4px;font-size:11px}
+</style>
+
+<div class="wrap">
+  <h2 class="sr-only">Comparador de parámetros de radiación electromagnética incluyendo número de onda</h2>
+
+  <div id="spectrum-wrap" style="position:relative;margin-bottom:0.25rem">
+    <div class="spectrum-bar" id="specBar"></div>
+  </div>
+  <div class="region-labels">
+    <span>Rayos γ</span><span>Rayos X</span><span>UV</span><span>Visible</span><span>IR</span><span>THz / microondas</span><span>Radio</span>
+  </div>
+
+  <div class="controls">
+    <div class="control-card">
+      <label>Longitud de onda</label>
+      <div class="val"><span id="wl-display">0.5</span><span class="unit">μm</span></div>
+      <input type="range" id="wl-slider" min="-6" max="6" step="0.01" value="0">
+    </div>
+    <div class="control-card">
+      <label>Ajuste fino (×10<sup id="exp-display">0</sup>)</label>
+      <div class="val"><span id="wl-sci">500 nm</span></div>
+      <input type="range" id="fine-slider" min="0.1" max="9.99" step="0.01" value="5">
+    </div>
+  </div>
+
+  <div id="region-tags-wrap" style="margin-bottom:0.75rem"></div>
+
+  <div class="results">
+    <div class="metric">
+      <div class="mlabel">Longitud de onda</div>
+      <div class="mval" id="r-wl">—</div>
+      <span class="munit" id="r-wl-u">μm</span>
+    </div>
+    <div class="metric">
+      <div class="mlabel">Frecuencia</div>
+      <div class="mval" id="r-freq">—</div>
+      <span class="munit" id="r-freq-u">THz</span>
+    </div>
+    <div class="metric">
+      <div class="mlabel">Energía fotón</div>
+      <div class="mval" id="r-ev">—</div>
+      <span class="munit" id="r-ev-u">eV</span>
+    </div>
+    <div class="metric">
+      <div class="mlabel">T cuerpo negro (Wien)</div>
+      <div class="mval" id="r-temp">—</div>
+      <span class="munit" id="r-temp-u">K</span>
+    </div>
+  </div>
+
+  <div id="wn-row" class="results-row2" style="display:none">
+    <div class="metric-wn">
+      <div>
+        <div class="mlabel">Número de onda</div>
+        <div><span class="mval" id="r-wn">—</span><span class="munit">cm⁻¹</span></div>
+      </div>
+    </div>
+    <div class="metric-wn" style="background:var(--color-background-secondary)">
+      <span class="wn-context" id="wn-context"></span>
+    </div>
+  </div>
+
+  <div id="vis-color-wrap" style="display:none">
+    <div class="color-swatch" id="vis-swatch"></div>
+    <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:4px;text-align:center" id="vis-color-label"></div>
+  </div>
+
+  <hr class="sep">
+
+  <div class="compare-section">
+    <div class="compare-title">Comparador <span style="color:var(--color-text-tertiary);font-weight:400">(añade puntos para comparar)</span></div>
+    <div id="compare-list"></div>
+    <div style="margin-top:8px">
+      <button class="add-btn" onclick="addPoint()">+ Añadir punto actual</button>
+      <button class="clear-btn" onclick="clearPoints()">Limpiar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const h=6.626e-34,c=3e8,eVJ=1.602e-19,b=2.898e-3;
+const COLORS=['#3266ad','#d4536e','#2da05a','#e08b1a','#7a4fce','#1a9ba5','#c44d1a'];
+let points=[],compareColorIdx=0;
+
+// Wavenumber range where it's conventionally used: ~10–15000 cm⁻¹
+// = wavelength 667 nm – 1 cm  (NIR boundary ~14000, FIR/THz down to ~10)
+const WN_MIN_CM=10, WN_MAX_CM=15000;
+
+// Contextual labels for wavenumber subranges
+function wnContext(wn){
+  if(wn<50)  return 'Banda THz / sub-mm · espectroscopía rotacional, fonones';
+  if(wn<400) return 'FIR · modos de red, espectroscopía rotacional';
+  if(wn<700) return 'Huella dactilar baja · deformaciones, torsiones';
+  if(wn<1500)return 'Región de huella dactilar · deformaciones C–H, C–O, C–N';
+  if(wn<3000)return 'Zona funcional · flexiones, C=O, C=C, anillos aromáticos';
+  if(wn<4000)return 'Zona funcional alta · estiramientos O–H, N–H, C–H (FTIR típico)';
+  if(wn<7000)return 'NIR combinaciones · bandas de sobretonos 1.ª combinación';
+  return         'NIR sobretonos · 2.ª y 3.ª armónica, espectroscopía difusa';
+}
+
+const REGIONS=[
+  [1e-2,    'Rayos γ',    null,           '#3C3489','#CECBF6',null,null,null],
+  [10,      'Rayos X',    null,           '#185FA5','#B5D4F4',null,null,null],
+  [100,     'Rayos X',    'X blandos',    '#185FA5','#B5D4F4','#0C447C','#85B7EB',null],
+  [200,     'UV',         'UV-C',         '#534AB7','#EEEDFE','#3C3489','#CECBF6',null],
+  [315,     'UV',         'UV-B',         '#534AB7','#EEEDFE','#534AB7','#CECBF6',null],
+  [380,     'UV',         'UV-A',         '#534AB7','#EEEDFE','#7F77DD','#EEEDFE',null],
+  [780,     'Visible',    null,           '#0F6E56','#9FE1CB',null,null,null],
+  [1400,    'IR',         'NIR',          '#993C1D','#F5C4B3','#712B13','#F5C4B3','Near-infrared'],
+  [3000,    'IR',         'SWIR',         '#993C1D','#F5C4B3','#993C1D','#FAECE7','Short-wave IR'],
+  [8000,    'IR',         'MWIR',         '#993C1D','#F5C4B3','#BA7517','#FAEEDA','Mid-wave IR'],
+  [15000,   'IR',         'LWIR',         '#993C1D','#F5C4B3','#854F0B','#FAC775','Long-wave IR'],
+  [1e6,     'IR',         'FIR',          '#993C1D','#F5C4B3','#633806','#FAC775','Far-infrared'],
+  [3e6,     'THz',        'THz / sub-mm', '#3B6D11','#C0DD97','#27500A','#C0DD97','0,1–3 THz · espectroscopía, imagen médica, seguridad'],
+  [3e7,     'Microondas', 'EHF (mm)',     '#444441','#D3D1C7','#5F5E5A','#F1EFE8','Extremely High Freq · 30–300 GHz'],
+  [3e8,     'Microondas', 'SHF (cm)',     '#444441','#D3D1C7','#5F5E5A','#F1EFE8','Super High Freq · 3–30 GHz'],
+  [3e9,     'Microondas', 'UHF (dm)',     '#444441','#D3D1C7','#5F5E5A','#F1EFE8','Ultra High Freq · 300 MHz–3 GHz'],
+  [1e12,    'Radio',      'VHF–ELF',      '#2C2C2A','#D3D1C7',null,null,null],
+  [Infinity,'Radio',      null,           '#2C2C2A','#D3D1C7',null,null,null],
+];
+
+function getRegion(nm){ for(const r of REGIONS){if(nm<r[0])return r;} return REGIONS[REGIONS.length-1]; }
+function getWavelength(){
+  const exp=parseFloat(document.getElementById('wl-slider').value);
+  const mant=parseFloat(document.getElementById('fine-slider').value);
+  return mant*Math.pow(10,exp)*1e-6;
+}
+function formatNum(v,sig){
+  if(v===0)return'0';
+  if(Math.abs(v)>=0.001&&Math.abs(v)<1e7)
+    return parseFloat(v.toPrecision(sig)).toLocaleString('es-ES',{maximumSignificantDigits:sig});
+  return v.toExponential(2);
+}
+function formatFreq(hz){
+  if(hz>=1e18)return[formatNum(hz/1e18,3),'EHz'];
+  if(hz>=1e15)return[formatNum(hz/1e15,3),'PHz'];
+  if(hz>=1e12)return[formatNum(hz/1e12,3),'THz'];
+  if(hz>=1e9)return[formatNum(hz/1e9,3),'GHz'];
+  if(hz>=1e6)return[formatNum(hz/1e6,3),'MHz'];
+  if(hz>=1e3)return[formatNum(hz/1e3,3),'kHz'];
+  return[formatNum(hz,3),'Hz'];
+}
+function formatEV(ev){
+  if(ev>=1e9)return[formatNum(ev/1e9,3),'GeV'];
+  if(ev>=1e6)return[formatNum(ev/1e6,3),'MeV'];
+  if(ev>=1e3)return[formatNum(ev/1e3,3),'keV'];
+  if(ev>=1)return[formatNum(ev,3),'eV'];
+  if(ev>=1e-3)return[formatNum(ev*1e3,3),'meV'];
+  return[formatNum(ev*1e6,3),'μeV'];
+}
+function formatTemp(T){
+  if(T>=1e9)return[formatNum(T/1e9,3),'GK'];
+  if(T>=1e6)return[formatNum(T/1e6,3),'MK'];
+  if(T>=1e3)return[formatNum(T/1e3,3),'kK'];
+  return[formatNum(T,4),'K'];
+}
+function formatWN(wn){
+  if(wn>=1000) return formatNum(wn,5);
+  if(wn>=100)  return formatNum(wn,4);
+  return formatNum(wn,3);
+}
+function wlToVisColor(nm){
+  if(nm<380||nm>780)return null;
+  let r,g,bb;
+  if(nm<440){r=(440-nm)/60;g=0;bb=1}
+  else if(nm<490){r=0;g=(nm-440)/50;bb=1}
+  else if(nm<510){r=0;g=1;bb=(510-nm)/20}
+  else if(nm<580){r=(nm-510)/70;g=1;bb=0}
+  else if(nm<645){r=1;g=(645-nm)/65;bb=0}
+  else{r=1;g=0;bb=0}
+  let f=nm<420?0.3+0.7*(nm-380)/40:nm<645?1:0.3+0.7*(780-nm)/135;
+  return`rgb(${Math.round(255*r*f)},${Math.round(255*g*f)},${Math.round(255*bb*f)})`;
+}
+function spectrumPos(nm){
+  return Math.max(0,Math.min(100,(Math.log10(nm)+2)/11*100));
+}
+
+function update(){
+  const wlM=getWavelength();
+  const exp=parseFloat(document.getElementById('wl-slider').value);
+  const mant=parseFloat(document.getElementById('fine-slider').value);
+  const nm=wlM*1e9;
+
+  document.getElementById('wl-display').textContent=formatNum(mant*Math.pow(10,exp),4);
+  document.getElementById('exp-display').textContent=Math.round(exp);
+  const nmLabel=nm<1?formatNum(nm*1000,4)+' pm':nm<1000?formatNum(nm,4)+' nm':nm<1e6?formatNum(nm/1000,4)+' μm':nm<1e9?formatNum(nm/1e6,4)+' mm':formatNum(nm/1e9,4)+' m';
+  document.getElementById('wl-sci').textContent=nmLabel;
+
+  const freq=c/wlM;
+  const energyEV=(h*c/wlM)/eVJ;
+  const T=b/wlM;
+  // wavenumber in cm⁻¹ = 1 / (wavelength in cm) = 1e-2 / wlM
+  const wn=1e-2/wlM;
+
+  document.getElementById('r-wl').textContent=formatNum(mant*Math.pow(10,exp),4);
+  document.getElementById('r-wl-u').textContent='μm';
+  const[fv,fu]=formatFreq(freq);
+  document.getElementById('r-freq').textContent=fv;
+  document.getElementById('r-freq-u').textContent=fu;
+  const[ev,eu]=formatEV(energyEV);
+  document.getElementById('r-ev').textContent=ev;
+  document.getElementById('r-ev-u').textContent=eu;
+  const[tv,tu]=formatTemp(T);
+  document.getElementById('r-temp').textContent=tv;
+  document.getElementById('r-temp-u').textContent=tu;
+
+  // Wavenumber row — show only in relevant range
+  const wnRow=document.getElementById('wn-row');
+  if(wn>=WN_MIN_CM&&wn<=WN_MAX_CM){
+    wnRow.style.display='grid';
+    document.getElementById('r-wn').textContent=formatWN(wn);
+    document.getElementById('wn-context').textContent=wnContext(wn);
+  } else {
+    wnRow.style.display='none';
+  }
+
+  // Region tags
+  const reg=getRegion(nm);
+  const[,mainName,subName,mainBg,mainFg,subBg,subFg,subNote]=reg;
+  let tagsHtml=`<span class="region-tag" style="background:${mainBg};color:${mainFg}">${mainName}</span>`;
+  if(subName) tagsHtml+=`<span class="region-arrow">›</span><span class="region-sub" style="background:${subBg};color:${subFg}">${subName}</span>`;
+  if(subNote) tagsHtml+=`<span style="font-size:11px;color:var(--color-text-tertiary);margin-left:2px">${subNote}</span>`;
+  document.getElementById('region-tags-wrap').innerHTML=`<div class="region-tags">${tagsHtml}</div>`;
+
+  // Visible color
+  const visColor=wlToVisColor(nm);
+  const visWrap=document.getElementById('vis-color-wrap');
+  if(visColor){
+    visWrap.style.display='block';
+    document.getElementById('vis-swatch').style.background=visColor;
+    document.getElementById('vis-color-label').textContent=`Color visible aproximado (${Math.round(nm)} nm)`;
+  } else {
+    visWrap.style.display='none';
+  }
+
+  // Marker
+  const bar=document.getElementById('specBar');
+  const ex=bar.querySelector('.spectrum-marker');
+  if(ex)ex.remove();
+  const mk=document.createElement('div');
+  mk.className='spectrum-marker';
+  mk.style.left=spectrumPos(nm)+'%';
+  bar.appendChild(mk);
+}
+
+function addPoint(){
+  const wlM=getWavelength();
+  const nm=wlM*1e9;
+  const freq=c/wlM;
+  const energyEV=(h*c/wlM)/eVJ;
+  const T=b/wlM;
+  const wn=1e-2/wlM;
+  const reg=getRegion(nm);
+  const[,mainName,subName,mainBg,mainFg,subBg,subFg]=reg;
+  const color=COLORS[compareColorIdx%COLORS.length];
+  compareColorIdx++;
+  const mant=parseFloat(document.getElementById('fine-slider').value);
+  const exp=parseFloat(document.getElementById('wl-slider').value);
+  const[fv,fu]=formatFreq(freq);
+  const[ev,eu]=formatEV(energyEV);
+  const[tv,tu]=formatTemp(T);
+  const wnStr=(wn>=WN_MIN_CM&&wn<=WN_MAX_CM)?` · ${formatWN(wn)} cm⁻¹`:'';
+  const labelTag=subName
+    ?`<span class="tag" style="background:${mainBg};color:${mainFg}">${mainName}</span> <span class="tag" style="background:${subBg};color:${subFg}">${subName}</span>`
+    :`<span class="tag" style="background:${mainBg};color:${mainFg}">${mainName}</span>`;
+  points.push({
+    wlLabel:formatNum(mant*Math.pow(10,exp),4)+' μm',
+    freq:fv+' '+fu, ev:ev+' '+eu, temp:tv+' '+tu,
+    wnStr, labelTag, color, pos:spectrumPos(nm)
+  });
+  renderPoints();
+  renderCompareMarkers();
+}
+
+function clearPoints(){points=[];compareColorIdx=0;renderPoints();renderCompareMarkers();}
+
+function renderPoints(){
+  const list=document.getElementById('compare-list');
+  if(!points.length){list.innerHTML='<div style="color:var(--color-text-tertiary);font-size:13px">Sin puntos añadidos aún.</div>';return;}
+  list.innerHTML=points.map((p,i)=>`
+    <div class="compare-row">
+      <div class="compare-dot" style="background:${p.color}"></div>
+      <span class="compare-name">${p.wlLabel}</span>
+      <span class="compare-vals">${p.freq} · ${p.ev}${p.wnStr} · T: ${p.temp} · ${p.labelTag}</span>
+      <span style="cursor:pointer;color:var(--color-text-tertiary);font-size:16px;padding:0 4px" onclick="removePoint(${i})">×</span>
+    </div>`).join('');
+}
+
+function removePoint(i){points.splice(i,1);renderPoints();renderCompareMarkers();}
+
+function renderCompareMarkers(){
+  const bar=document.getElementById('specBar');
+  bar.querySelectorAll('.cmp-marker').forEach(e=>e.remove());
+  points.forEach(p=>{
+    const m=document.createElement('div');
+    m.className='cmp-marker';
+    m.style.cssText=`position:absolute;top:0;left:${p.pos}%;transform:translateX(-50%);width:3px;height:28px;background:${p.color};border-radius:1px;opacity:0.8`;
+    bar.appendChild(m);
+  });
+}
+
+document.getElementById('wl-slider').addEventListener('input',update);
+document.getElementById('fine-slider').addEventListener('input',update);
+update();renderPoints();
+</script>
